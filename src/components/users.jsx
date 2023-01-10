@@ -2,79 +2,64 @@ import React,{useState} from "react";
 import api from "../api";
 
 const Users = () => {
-
   const [users, setUsers] = useState(api.users.fetchAll())
-  const [number, setNumber] = useState(users.length)
-  
-    const handleDelete = (userId) => {
-      setUsers(prevState => prevState.filter((prevState) => (prevState._id)!== userId))
-      handleDecrement()
-    }
+  const handleDelete = (userId) => 
+    setUsers(users.filter((user) => user._id !== userId))
 
     const renderPhrase = (number) => {
-      return number !== 0 
-      ? <h1><span className="badge bg-primary">{number} {handleNumWord(number, ['человек', 'человека', ])} тусанет с тобой сегодня </span></h1> 
-      : <h1><span className="badge bg-danger"> Никто не тусанет с тобой сегодня </span></h1>
-    } 
+      const lastOne = Number(number.toString().slice(-1))
+      if (number > 4 && number < 15) return "Человек тусанет"
+      if ([2, 3, 4].indexOf(lastOne) >= 0) return "Человека тусанут"
+      if (lastOne === 1) return "Человек тусанет"
+      return "Человек тусанет"
 
-    const handleDecrement = () => {
-      setNumber((prevState) => prevState - 1)
     }
-
-    const handleNumWord = (number, words) => {
-      number = Math.abs(number) % 100
-      let num = number % 10
-      if(number > 10 && number < 20) return words[0]
-      if(num > 1 && num < 5) return words[1]
-      if(num == 1) return words[0]
-      return words[0]
-    }
-
-      const getBageClasses = (color) => {
-      let classes = "badge m-1 "
-      classes += `bg-${color}`
-      return classes
-    }
-
-    return (
-
+  
+  return (
     <>
-    {renderPhrase(number)}
+    <h2><span className={
+        " mx-1 badge bg-" + 
+        (users.length > 0 ? "primary" : "danger" )}
+    >
+      {users.length > 0 
+        ? `${users.length} ${renderPhrase(users.length)} с тобой сегодня`
+        : "Никто с тобой не тусанет" }
 
-    <table className="table table-striped">
-
-    {users.length !==0 
-      ? <thead>
-      <tr className="table-primary">
-        <th scope="col">Имя</th>
-        <th scope="col">Качества</th>
-        <th scope="col">Профессия</th>
-        <th scope="col">Встретился, раз</th>
-        <th scope="col">Оценка</th>
-        <th scope="col"></th>
-      </tr>
-    </thead>  
-      : ""}
-    <tbody>
-
-         {users.map(user => (<tr key = {user._id}>
-          <td>{user.name}</td>
-          <td>
-            {user.qualities.map(quality=>{
-            return <span className ={getBageClasses(quality.color)} key = {quality._id}>
-                        {quality.name + " "}
-                   </span>})}
-          </td>
-          <td>{user.profession.name}</td>
-          <td>{user.completedMeetings}</td>
-          <td>{user.rate}/5</td>
-          <td><button className="btn btn-danger btn-sm" onClick={() => handleDelete(user._id)}>Delete</button></td>
-
-          </tr>))}
-
-    </tbody>
-  </table>
-  </>
+    </span></h2>
+    {users.length > 0 &&
+        <table className="table table-striped">
+          <thead>
+            <tr className="table-primary">
+              <th scope="col">Имя</th>
+              <th scope="col">Качества</th>
+              <th scope="col">Профессия</th>
+              <th scope="col">Встретился, раз</th>
+              <th scope="col">Оценка</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((user) => (
+              <tr key = {user._id}>
+                <td>{user.name}</td>
+                <td>
+                  {user.qualities.map(item => (
+                      <span 
+                          className = {"badge m-1 bg-" + item.color } 
+                          key = {item._id}
+                      > 
+                        {item.name} 
+                      </span>
+                  ))}
+                </td>
+                <td>{user.profession.name}</td>
+                <td>{user.completedMeetings}</td>
+                <td>{user.rate}</td>
+                <td><button className={"btn btn-danger"} onClick ={() => handleDelete(user._id)}>Удалить</button></td>
+              </tr>))}
+          </tbody>
+        </table>}
+    </>
 )}
 
 export default Users
