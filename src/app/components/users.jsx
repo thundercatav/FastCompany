@@ -1,46 +1,24 @@
-import React, { useState } from "react";
-import SearchStatus from "./searchStatus";
+import React from "react";
 import User from "./user";
-import api from "../api";
-
-const Users = () => {
-  const [users, setUsers] = useState(api.users.fetchAll());
-  const handleDelete = (userId) =>
-    setUsers(users.filter((user) => user._id !== userId));
-  const handleToggleBookMark = (id) => {
-    setUsers(
-      users.map((user) => {
-        if (user._id === id) {
-          return { ...user, bookmark: !user.bookmark };
-        }
-        return user;
-      })
-    );
-  };
+const Users = ({ users, ...rest }) => {
   return (
     <>
-      <SearchStatus length={users.length} />
       {users.length > 0 && (
-        <table className="table table-striped">
+        <table className="table">
           <thead>
-            <tr className="table-primary">
+            <tr>
               <th scope="col">Имя</th>
               <th scope="col">Качества</th>
-              <th scope="col">Профессия</th>
+              <th scope="col">Провфессия</th>
               <th scope="col">Встретился, раз</th>
               <th scope="col">Оценка</th>
               <th scope="col">Избранное</th>
-              <th></th>
+              <th />
             </tr>
           </thead>
           <tbody>
             {users.map((user) => (
-              <User
-                {...user}
-                key={user._id}
-                onDelete={handleDelete}
-                onToggleBookMark={handleToggleBookMark}
-              />
+              <User key={user._id} {...rest} {...user} />
             ))}
           </tbody>
         </table>
