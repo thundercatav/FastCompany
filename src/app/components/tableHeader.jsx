@@ -1,6 +1,5 @@
 import React from "react";
 import PropTypes from "prop-types";
-
 const TableHeader = ({ onSort, selectedSort, columns }) => {
     const handleSort = (item) => {
         if (selectedSort.path === item) {
@@ -11,6 +10,16 @@ const TableHeader = ({ onSort, selectedSort, columns }) => {
         } else {
             onSort({ path: item, order: "asc" });
         }
+    };
+    const renderSortArrow = (selectedSort, currentPath) => {
+        if (selectedSort.path === currentPath) {
+            if (selectedSort.order === "asc") {
+                return <i className="bi bi-caret-down-fill"></i>;
+            } else {
+                return <i className="bi bi-caret-up-fill"></i>;
+            }
+        }
+        return null;
     };
 
     return (
@@ -24,28 +33,17 @@ const TableHeader = ({ onSort, selectedSort, columns }) => {
                                 ? () => handleSort(columns[column].path)
                                 : undefined
                         }
-                        scope="col"
                         {...{ role: columns[column].path && "button" }}
+                        scope="col"
                     >
-                        {columns[column].name}
-                        {columns[column].path === selectedSort.path ? (
-                            selectedSort.order === "desc" ? (
-                                <>
-                                    <i className="bi bi-caret-down-fill"></i>
-                                </>
-                            ) : (
-                                <>
-                                    <i className="bi bi-caret-up-fill"></i>
-                                </>
-                            )
-                        ) : null}
+                        {columns[column].name}{" "}
+                        {renderSortArrow(selectedSort, columns[column].path)}
                     </th>
                 ))}
             </tr>
         </thead>
     );
 };
-
 TableHeader.propTypes = {
     onSort: PropTypes.func.isRequired,
     selectedSort: PropTypes.object.isRequired,
