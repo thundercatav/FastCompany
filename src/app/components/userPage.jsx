@@ -1,39 +1,38 @@
 import React, { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
 import api from "../api";
 import PropTypes from "prop-types";
 import QualitiesList from "./qualitiesList";
-import { useHistory } from "react-router-dom";
 
-const UserPage = ({ id }) => {
-    const [users, setUsers] = useState();
+const UserPage = ({ userId }) => {
     const history = useHistory();
+    const [user, setUser] = useState();
     useEffect(() => {
-        api.users.getById(id).then((data) => {
-            setUsers(data);
-        });
-    }, []);
+        api.users.getById(userId).then((data) => setUser(data));
+    });
 
     const handleClick = () => {
         history.push("/users");
     };
 
-    return users ? (
-        <>
-            <h1>{users.name}</h1>
-
-            <h2>Профессия {users.profession.name}</h2>
-            <QualitiesList qualities={users.qualities} />
-            <p>completedMeetings: {users.completedMeetings}</p>
-            <h2>rate: {users.rate}</h2>
-            <button onClick={handleClick}>Все пользователи</button>
-        </>
-    ) : (
-        "loading"
-    );
+    if (user) {
+        return (
+            <div>
+                <h1>{user.name}</h1>
+                <h2>Проффесия: {user.profession.name}</h2>
+                <QualitiesList qualities={user.qualities} />
+                <p>completedMeetings: {user.completedMeetings}</p>
+                <h2>Rate: {user.rate}</h2>
+                <button onClick={handleClick}>Все Пользователи</button>
+            </div>
+        );
+    } else {
+        return <h1>Loading</h1>;
+    }
 };
 
 UserPage.propTypes = {
-    id: PropTypes.string
+    userId: PropTypes.string.isRequired
 };
 
 export default UserPage;
